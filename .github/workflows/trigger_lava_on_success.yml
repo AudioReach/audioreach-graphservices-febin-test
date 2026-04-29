@@ -27,6 +27,7 @@ jobs:
         with:
           name: test-matrix
           run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}   # ← ADDED
 
       - name: Read matrix JSON
         id: matrix
