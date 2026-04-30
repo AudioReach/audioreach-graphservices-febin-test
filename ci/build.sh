@@ -28,4 +28,3 @@ autoconf --force
 ./configure ${BUILD_ARGS}
 # make
 make DESTDIR=${GITHUB_WORKSPACE}/build install
-
