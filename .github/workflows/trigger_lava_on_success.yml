@@ -27,7 +27,23 @@ jobs:
         with:
           name: test-matrix
           run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}   # ← ADDED
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # ✅ NEW: download all presigned URL artifacts from the triggering workflow
+      - name: Download presigned URL artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: presigned_url_*.txt
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: presigned_urls
+
+      # ✅ NEW: re-upload for the reusable workflow run
+      - name: Re-upload presigned URL artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: presigned_urls
+          path: presigned_urls
 
       - name: Read matrix JSON
         id: matrix
