@@ -79,4 +79,3 @@ jobs:
     secrets: inherit
     with:
       build_matrix: ${{ needs.prepare_matrix.outputs.test_matrix }}
-      build_url: ${{ needs.prepare_matrix.outputs.build_url }}
