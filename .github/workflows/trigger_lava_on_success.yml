@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       test_matrix: ${{ steps.matrix.outputs.test_matrix }}
+      build_url: ${{ steps.read_url.outputs.build_url }}   # ✅ expose URL
 
     steps:
       - name: Download test matrix artifact
@@ -29,7 +30,6 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # ✅ NEW: download all presigned URL artifacts from the triggering workflow
       - name: Download presigned URL artifacts
         uses: actions/download-artifact@v4
         with:
@@ -38,7 +38,27 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: presigned_urls
 
-      # ✅ NEW: re-upload for the reusable workflow run
+      # ✅ REQUIRED: read URL from artifact folder
+      - name: Read presigned URL
+        id: read_url
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const fs = require('fs')
+            const path = require('path')
+
+            const baseDir = 'presigned_urls'
+            const artifactDir = fs.readdirSync(baseDir)[0]
+            const filePath = path.join(
+              baseDir,
+              artifactDir,
+              artifactDir
+            )
+
+            const url = fs.readFileSync(filePath, 'utf8').trim()
+            console.log(`Presigned URL: ${url}`)
+            core.setOutput('build_url', url)
+
       - name: Re-upload presigned URL artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -59,3 +79,4 @@ jobs:
     secrets: inherit
     with:
       build_matrix: ${{ needs.prepare_matrix.outputs.test_matrix }}
+      build_url: ${{ needs.prepare_matrix.outputs.build_url }}
