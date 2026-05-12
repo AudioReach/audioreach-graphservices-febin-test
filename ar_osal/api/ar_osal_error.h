@@ -1,6 +1,7 @@
 #ifndef AR_OSAL_ERROR_H
 #define AR_OSAL_ERROR_H
 
+
 /**
  * \file ar_osal_error.h
  * \brief
