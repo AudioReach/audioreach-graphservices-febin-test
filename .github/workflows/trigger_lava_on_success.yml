@@ -50,6 +50,8 @@ jobs:
 
             const baseDir = 'presigned_urls'
             const fileName = fs.readdirSync(baseDir)[0]
+            console.log('artifactDir contents:', fileName)
+            console.log('artifactDir contents_2:', baseDir)
             const url = fs.readFileSync(path.join(baseDir, fileName), 'utf8').trim()
             console.log(`Presigned URL: ${url}`)
             core.setOutput('build_url', url)
