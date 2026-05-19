@@ -6,7 +6,7 @@ on:
     types:
       - completed
     branches:
-      - temp
+      - njetha-test
 
 permissions:
   contents: read
@@ -37,6 +37,7 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: presigned_urls
+          merge-multiple: true
 
       # ✅ REQUIRED: read URL from artifact folder
       - name: Read presigned URL
@@ -48,14 +49,8 @@ jobs:
             const path = require('path')
 
             const baseDir = 'presigned_urls'
-            const artifactDir = fs.readdirSync(baseDir).find(
-              entry => fs.statSync(path.join(baseDir, entry)).isDirectory()
-            )
-            const artifactPath = path.join(baseDir, artifactDir)
-            const fileName = fs.readdirSync(artifactPath)[0]
-            const filePath = path.join(artifactPath, fileName)
-
-            const url = fs.readFileSync(filePath, 'utf8').trim()
+            const fileName = fs.readdirSync(baseDir)[0]
+            const url = fs.readFileSync(path.join(baseDir, fileName), 'utf8').trim()
             console.log(`Presigned URL: ${url}`)
             core.setOutput('build_url', url)
 
