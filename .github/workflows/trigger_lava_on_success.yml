@@ -37,9 +37,8 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: presigned_urls
-          merge-multiple: true
 
-      # Read first presigned URL for logging/output (files are flat after merge-multiple)
+      # ✅ REQUIRED: read URL from artifact folder
       - name: Read presigned URL
         id: read_url
         uses: actions/github-script@v8
@@ -49,8 +48,12 @@ jobs:
             const path = require('path')
 
             const baseDir = 'presigned_urls'
-            const files = fs.readdirSync(baseDir)
-            const filePath = path.join(baseDir, files[0])
+            const artifactDir = fs.readdirSync(baseDir).find(
+              entry => fs.statSync(path.join(baseDir, entry)).isDirectory()
+            )
+            const artifactPath = path.join(baseDir, artifactDir)
+            const fileName = fs.readdirSync(artifactPath)[0]
+            const filePath = path.join(artifactPath, fileName)
 
             const url = fs.readFileSync(filePath, 'utf8').trim()
             console.log(`Presigned URL: ${url}`)
